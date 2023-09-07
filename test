@@ -1,7 +1,5 @@
-import pygame
-import time
-import os
 import Jetson.GPIO as GPIO
+from audio import speak, isSwitchValue  # Import isSwitchValue from audio.py
 
 # GPIO library
 red_pin = 38
@@ -44,10 +42,10 @@ def GreenLed():
         GPIO.cleanup()
 
 # Global variable
-isSwitchValue = 0
+# isSwitchValue = 0  # Remove this line to avoid redefining the variable
 
 def switch_handler(channel):
-    global isSwitchValue
+    global isSwitchValue  # Use the global variable from audio.py
     isSwitchValue = 1
     print('s', isSwitchValue)
     print('=====================switch======================')
@@ -57,13 +55,21 @@ def switch_event():
     GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=switch_handler, bouncetime=200)
     print('e ', isSwitchValue)
 
+# Call the speak() function or other relevant functions to trigger audio playback
+# Be sure to handle isSwitchValue appropriately when using it in your GPIO-related functions.
+
+
+이까지 하나========================================================
+
+
+import pygame
+
 def speak():
     pygame.init()
     pygame.mixer.music.load('/home/jetson/Desktop/LangChain-StoryBot-main/assist/wav/snow_white.wav')
     pygame.mixer.music.play()
 
-    global isSwitchValue
-    switch_event()
+    global isSwitchValue  # Make sure to handle global variables accordingly in your main script
     
     running = True
     while running:
@@ -79,5 +85,3 @@ def speak():
         # You can add additional conditions or logic here as needed
 
     return False
-
-# Call the speak() function or other relevant functions to trigger audio playback
