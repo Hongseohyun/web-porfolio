@@ -1,0 +1,83 @@
+import pygame
+import time
+import os
+import Jetson.GPIO as GPIO
+
+# GPIO library
+red_pin = 38
+green_pin = 40
+button_pin = 33
+button_gnd = 29
+
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(red_pin, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(green_pin, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(button_gnd, GPIO.OUT, initial=GPIO.HIGH)
+
+def Red_outLed():
+    # LED off
+    try:
+        GPIO.output(red_pin, GPIO.LOW)
+    except KeyboardInterrupt:
+        GPIO.cleanup()
+
+def Green_outLed():
+    # LED off
+    try:
+        GPIO.output(green_pin, GPIO.LOW)
+    except KeyboardInterrupt:
+        GPIO.cleanup()
+
+def RedLed():
+    try:
+        Green_outLed()
+        GPIO.output(red_pin, GPIO.HIGH)
+    except KeyboardInterrupt:
+        GPIO.cleanup()
+
+def GreenLed():
+    try:
+        Red_outLed()
+        GPIO.output(green_pin, GPIO.HIGH)
+    except KeyboardInterrupt:
+        GPIO.cleanup()
+
+# Global variable
+isSwitchValue = 0
+
+def switch_handler(channel):
+    global isSwitchValue
+    isSwitchValue = 1
+    print('s', isSwitchValue)
+    print('=====================switch======================')
+    return False
+
+def switch_event():
+    GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=switch_handler, bouncetime=200)
+    print('e ', isSwitchValue)
+
+def speak():
+    pygame.init()
+    pygame.mixer.music.load('/home/jetson/Desktop/LangChain-StoryBot-main/assist/wav/snow_white.wav')
+    pygame.mixer.music.play()
+
+    global isSwitchValue
+    switch_event()
+    
+    running = True
+    while running:
+        if isSwitchValue == 1:
+            print(11111, isSwitchValue)
+            pygame.mixer.music.stop()
+            pygame.mixer.music.unload()
+            pygame.quit()
+            running = False
+            isSwitchValue = 0
+            return False
+
+        # You can add additional conditions or logic here as needed
+
+    return False
+
+# Call the speak() function or other relevant functions to trigger audio playback
